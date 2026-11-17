@@ -1,0 +1,14 @@
+name: Playtomic-Test
+on: workflow_dispatch
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Playtomic erreichbar?
+        run: |
+          D=$(date -d '+5 day' +%F)
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+          curl -s -o out.json -w "Verfuegbarkeit: HTTP %{http_code}\n" -A "$UA" "https://playtomic.com/api/clubs/availability?tenant_id=24925684-21ea-4a07-a20d-73efe7c4cc9c&date=$D&sport_id=PADEL"
+          head -c 200 out.json; echo
+          curl -s -o page.html -w "Clubseite: HTTP %{http_code}\n" -A "$UA" "https://playtomic.com/clubs/padel-wallau"
+          grep -o 'resourceId' page.html | wc -l
